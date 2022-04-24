@@ -1,0 +1,6 @@
+env/
+DockerFile
+docker-compose.prod.yml
+docker-compose.yml
+core/media
+core/static

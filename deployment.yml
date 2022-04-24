@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-python-image-deployment
+  namespace: zuhairalzikri
+  labels:
+    app: my-python-image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-python-image
+  template:
+    metadata:
+      labels:
+        app: my-python-image
+    spec:
+      containers:
+        - name: my-python-image
+          image: my-python-image:latest
+          imagePullPolicy: IfNotPresent
+          command: ['python']
+          args: ['manage.py', 'runserver', '0.0.0.0:8002']
+          ports:
+            - containerPort: 8002
+          env:
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: testpassword
+            - name: POSTGRES_HOST
+              value: postgres-db-service

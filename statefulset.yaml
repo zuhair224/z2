@@ -1,0 +1,59 @@
+# PostgreSQL StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-db
+  namespace: zuhairalzikri
+spec:
+  serviceName: postgresql-db-service
+  selector:
+    matchLabels:
+      app: postgresql-db
+  template:
+    metadata:
+      labels:
+        app: postgresql-db
+    spec:
+      containers:
+        - name: postgresql-db
+          image: postgres:latest
+          imagePullPolicy: 'IfNotPresent'
+          volumeMounts:
+            - name: pv-claim
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: testpassword
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+  volumeClaimTemplates:
+    - metadata:
+        name: pv-claim
+        namespace: zuhairalzikri
+      spec:
+        storageClassName: ''
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: ''
+  capacity:
+    storage: 2Gi
+  accessModes: ['ReadWriteOnce']
+  hostPath:
+    path: '/mnt/pg'
